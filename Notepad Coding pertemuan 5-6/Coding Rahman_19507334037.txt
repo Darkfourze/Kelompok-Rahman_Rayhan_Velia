@@ -95,11 +95,12 @@ while robot.step(timestep) != -1:
     us_kanan = uskanan.getValue()
     us_kiri = uskiri.getValue()
     us_tengah = ustengah.getValue()
-
-    s2_kanan = irr1_val + irr2_val
-    s2_kiri = irl1_val + irl2_val
+    
+    
     sensor_kanan = ircr_val + irr1_val + irr2_val
     sensor_kiri = ircl_val + irl1_val + irl2_val
+    s2_kiri = irl1_val + irl2_val
+    s2_kanan = irr1_val + irr2_val
     sensor_tengah = ircr_val + ircl_val
     total = sensor_kanan + sensor_kiri
     
