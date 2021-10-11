@@ -1,0 +1,130 @@
+from controller import Robot
+ 
+condition = 2
+
+def maju():
+    rightmotor.setVelocity(4)
+    leftmotor.setVelocity(4)
+def kiri():
+    rightmotor.setVelocity(4)
+    leftmotor.setVelocity(-4)
+def kanan():
+    rightmotor.setVelocity(-4)
+    leftmotor.setVelocity(4)
+def stop():
+    rightmotor.setVelocity(0)
+    leftmotor.setVelocity(0)
+def start():
+    if sensor_kanan > 1300 and sensor_kiri < 1300:
+        kiri()
+    elif total < 1100:
+        maju()
+    elif sensor_kanan < 1300 and sensor_kiri > 1300:
+        kanan()
+    elif s2_kiri < 400:
+        stop()
+        kiri()
+def obstacle():
+    if (total > 3400 and us_kanan < 900) or (total > 3400 and us_kiri < 900):
+        maju()
+def mid():
+    if sensor_kanan > 1300 and sensor_kiri < 1300:
+        kiri()
+    elif sensor_kanan < 1300 and sensor_kiri > 1300:
+        kanan()
+    elif s2_kanan < 400 :
+        kanan()
+    elif us_tengah > 150:
+        maju()
+    elif us_tengah < 150:
+        stop()
+    else :
+        maju()
+
+def finish():
+    if s2_kanan < 400 and s2_kiri > 500:
+        kanan()
+    elif s2_kanan < 400 and s2_kanan > 300 and s2_kiri < 500 and s2_kiri > 300 and us_tengah > 200:
+        maju()   
+    elif us_tengah < 200:
+        stop()
+    elif s2_kanan < 300 and s2_kiri < 300:
+        stop()     
+         
+robot = Robot()
+
+timestep = int(robot.getBasicTimeStep())
+
+leftmotor = robot.getDevice('motor_1')
+rightmotor = robot.getDevice('motor_2')
+leftmotor.setPosition(float('inf'))
+rightmotor.setPosition(float('inf'))
+
+uskiri = robot.getDevice('ds_left')
+uskanan = robot.getDevice('ds_right')
+ustengah = robot.getDevice('ds_front')
+
+
+irl2 = robot.getDevice('IRL2')
+irl1 = robot.getDevice('IRL1')
+ircl = robot.getDevice('IRCL')
+ircr = robot.getDevice('IRCR')
+irr1 = robot.getDevice('IRR1')
+irr2 = robot.getDevice('IRR2')
+
+irl2.enable(timestep)
+irl1.enable(timestep)
+ircl.enable(timestep)
+ircr.enable(timestep)
+irr1.enable(timestep)
+irr2.enable(timestep)
+uskiri.enable(timestep)
+uskanan.enable(timestep)
+ustengah.enable(timestep)
+
+while robot.step(timestep) != -1:  
+    rightmotor.setVelocity(4)
+    leftmotor.setVelocity(4)
+    
+    irl2_val = irl2.getValue()
+    irl1_val = irl1.getValue()
+    ircl_val = ircl.getValue()
+    ircr_val = ircr.getValue()
+    irr1_val = irr1.getValue()
+    irr2_val = irr2.getValue()
+    us_kanan = uskanan.getValue()
+    us_kiri = uskiri.getValue()
+    us_tengah = ustengah.getValue()
+
+    s2_kanan = irr1_val + irr2_val
+    s2_kiri = irl1_val + irl2_val
+    sensor_kanan = ircr_val + irr1_val + irr2_val
+    sensor_kiri = ircl_val + irl1_val + irl2_val
+    sensor_tengah = ircr_val + ircl_val
+    total = sensor_kanan + sensor_kiri
+    
+    
+    print ('{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}'.format (s2_kiri, sensor_tengah, s2_kanan, s2_kiri, sensor_kanan, condition))
+   
+
+    if condition == 2:
+        start()
+        obstacle()
+        if total < 3000 and us_kiri < 1000:
+            condition = 3 
+    elif condition == 3:
+        mid()
+        if us_kanan < 900:
+            condition = 4
+    elif condition == 4:
+        finish()
+        if us_kanan < 900:
+            condition = 4
+    elif condition == 5:
+        if total < 900:
+            stop()
+
+       
+       
+        
+     
